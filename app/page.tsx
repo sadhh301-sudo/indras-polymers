@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
+import { useState, useRef } from "react";
 
 const products = [
   {
@@ -26,6 +25,9 @@ const products = [
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [productIndex, setProductIndex] = useState(0);
+    const touchStartX = useRef<number | null>(null);
+    
   return (
     <main className="min-h-screen bg-white text-slate-900">
 
@@ -253,11 +255,31 @@ export default function Home() {
       </p>
     </div>
 
-    <div className="mt-14 grid gap-8 md:grid-cols-3">
+   
+<div
+  className="relative mx-auto mt-14 grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-3"
+  onTouchStart={(e) => {
+    touchStartX.current = e.touches[0].clientX;
+  }}
+  onTouchEnd={(e) => {
+    if (touchStartX.current === null) return;
 
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+
+    if (Math.abs(diff) > 50) {
+      setProductIndex((prev) =>
+        diff > 0
+          ? prev === 2 ? 0 : prev + 1
+          : prev === 0 ? 2 : prev - 1
+      );
+    }
+
+    touchStartX.current = null;
+  }}
+>
       {/* Masterbatches */}
-      <div className="group overflow-hidden rounded-2xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl">
-        <div className="h-56 overflow-hidden">
+      <div className={`group overflow-hidden rounded-2xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl ${productIndex === 0 ? "block" : "hidden"} md:block`}>
+        <div className="h-44 overflow-hidden">
           <img
             src="https://cdn.shopify.com/s/files/1/0564/9321/1807/files/Definition_of_PP_plastic_1024x1024.jpg?v=1711291656"
             alt="Colourful masterbatch granules"
@@ -275,10 +297,10 @@ export default function Home() {
           </a>
         </div>
       </div>
-
-      {/* Polymer Resins */}
-      <div className="group overflow-hidden rounded-2xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl">
-        <div className="h-56 overflow-hidden">
+    
+          {/* Polymer Resins */}
+      <div className={`group overflow-hidden rounded-2xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl ${productIndex === 1 ? "block" : "hidden"} md:block`}>
+        <div className="h-40 overflow-hidden">
           <img
             src="https://cdn.shopify.com/s/files/1/0564/9321/1807/files/Definition_of_PP_plastic_1024x1024.jpg?v=1711291656"
             alt="Polymer resin materials"
@@ -299,7 +321,7 @@ export default function Home() {
       </div>
 
       {/* Polymer Compounds */}
-      <div className="group overflow-hidden rounded-2xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl">
+      <div className={`group overflow-hidden rounded-2xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl ${productIndex === 2 ? "block" : "hidden"} md:block`}>
         <div className="h-56 overflow-hidden">
           <img
             src="https://cdn.shopify.com/s/files/1/0564/9321/1807/files/Definition_of_PP_plastic_1024x1024.jpg?v=1711291656"
@@ -319,12 +341,37 @@ export default function Home() {
           </a>
         </div>
       </div>
+
+
+{/* Mobile Side Arrows */}
+<div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 flex -translate-y-1/2 justify-between px-2 md:hidden">
+  <button
+    type="button"
+    onClick={() =>
+      setProductIndex((prev) => (prev === 0 ? 2 : prev - 1))
+    }
+    className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-black text-2xl font-bold text-white shadow-lg transition hover:bg-orange-500"
+  >
+    ←
+  </button>
+
+  <button
+    type="button"
+    onClick={() =>
+      setProductIndex((prev) => (prev === 2 ? 0 : prev + 1))
+    }
+    className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-black text-2xl font-bold text-white shadow-lg transition hover:bg-orange-500"
+  >
+    →
+  </button>
+</div>
+
+
     </div>
   </div>
 </section>
 
-
-      
+            
 {/* Infrastructure */}
 <section
   id="infrastructure"
